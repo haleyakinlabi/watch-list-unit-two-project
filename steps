@@ -1,0 +1,275 @@
+1. got to https://www.themoviedb.org/ and sign up 
+---------------------------------------------------
+
+2. get api key from https://www.themoviedb.org/
+Api Key: 5d593632af7aedffd2101f31c162f834
+--------------------------------------------------------
+
+3. install axios 
+ 
+ code: 
+ npm install axios 
+ -------------------------------------------------------
+
+4. create components folder and .env 
+-In your file directory, create a folder called components inside of your src folder
+
+-Create file called .env at the root level of your project, equal with src and public
+
+-Place your API key inside of your .env file, naming it REACT_APP_API_KEY
+--------------------------------------------------------
+
+5. create header component
+-Create a file called Header.jsx inside of your components folder
+
+-Set up your component with a header tag that contains an h2 tag
+
+-Your h2 tag should display “[YOUR NAME]’s Movie App”
+
+code:
+<header>
+    <h2>Haley's Movie App</h2>
+</header>
+
+--------------------------------------------------------
+6. Import Header
+
+code: 
+import Header from './components/Header'
+return (
+    <div className="App">
+        <Header/>
+    </div>
+)
+-----------------------------------------------------
+7. Create component MovieCard.jsx
+-Setup the basic structure for a component.
+
+-The return will contain a div with the classname of “movie-card”
+
+code: 
+return (
+    <div className="movie-card">
+
+    </div>
+);
+-------------------------------------------------------
+8. Replace the <h2> inside of our .map
+-Inside of your MovieScreen component, import MovieCard
+
+-Inside of our .map, rather than return an h2, return the MovieCard Component
+
+-Pass movie as a prop
+
+code: 
+const movieDisplay = movieList.map((movie, index) => {
+    return <MovieCard movie={movie}/>;
+});
+-------------------------------------------------------
+9. Make movieCard reusable 
+-Inside of your MovieCard component, destructure “movie” from your props
+
+-Inside of your div, create one more div.
+
+-Inside of this div, create an <img /> tag.
+
+-The src attribute is equal to the following reference: https://image.tmdb.org/t/p/original${movie.poster_path}
+
+-Under the <img /> tag, create an <h3> that contains the movie original_title
+
+-Create a <button> tag that is a sibling to this new div. The content of the button will be “Add to List”
+
+code: 
+return (
+    <div className="movie-card">
+        <div>
+            <img src={`https://image.tmdb.org/t/p/original${movie.poster_path}`} />
+            <h3>{movie.original_title}</h3>
+        </div>
+        <button>Add to List</button>
+    </div>
+);
+--------------------------------------------------------
+10. Create watchlist component 
+-Create a Watchlist.jsx file
+
+-The return statement will return a <div> with the classname of “watchlist”
+
+-The div will contain an <h1> that displays “My Watchlist”
+
+code: 
+return (
+    <div className="watchlist">
+        <h1>My Watchlist</h1>
+    </div>
+);
+------------------------------------------------------
+11. Place watchList in App.js
+-Import Watchlist into App.js
+
+-Place the watchlist directly under the MovieScreen Component, inside <main>
+
+-Pass it the prop of list
+
+code: 
+return (
+    <div className="App">
+        <Header />
+        <main>
+            <MovieScreen
+                movieList={movieList}
+                page={page}
+                setPage={setPage}
+                list={list}
+            />
+            <Watchlist list={list}/>
+        </main>
+    </div>
+);
+-------------------------------------------------
+12. Have watchList display movies from list state 
+-Inside of Watchlist.jsx, destructure your props
+
+-Create a variable called movieDisplay
+
+-Map over list, and return a MovieCard for each movie in list
+
+-Under our <h1> create a <div> that has the classname of “movie-container”
+
+-Place your movieDisplay variable inside of that div.
+
+code: 
+return (
+    <div className="watchlist">
+        <h1>My Watchlist</h1>
+        <div className="movie-container">
+            {movieDisplay}
+        </div>
+    </div>
+);
+-----------------------------------------------------
+13. Create addMovie Function 
+-Inside of App.js, let’s create a function called addMovie
+
+-It will take a movie in as a parameter
+
+-Once the function is written, pass it as a prop to MovieScreen
+
+code: 
+const addMovie = (movie) => setList([...list, movie]);
+
+<MovieScreen
+    addMovie={addMovie}
+    movieList={movieList}
+    page={page}
+    setPage={setPage}
+    list={list}
+/>
+------------------------------------------------------
+14. Add movies
+-Remember to destructure our new prop inside of MovieScreen
+
+-Now pass it as a prop to MovieCard
+
+-Inside of MovieCard, destructure the prop
+
+-Add an onClick to the button, which should pass the movie data to the addMovie function.
+
+code: 
+<button onClick={() => addMovie(movie)}>Add to List</button>
+-----------------------------------------------------
+15. Create removeMovie function
+-Inside of App.js, create a function called removeMovie. It will take in “movie” as a parameter
+
+-Inside of removeMovie, create a variable called newState
+
+-Set newState equal to list.filter and pass a callback to the filter method
+
+-The callback should return the items in the array that are not the movie passed in as a parameter
+
+-We will then call setList passing in newState
+
+code: 
+const removeMovie = (movie) => {
+    const newState = list.filter((mov) => {
+        return mov !== movie;
+    });
+    setList(newState);
+};
+--------------------------------------------------
+16. Pass removeMovie as props 
+-Pass removemovie down to MovieCard, through BOTH MovieScreen and WatchList.
+------------------------------------------------------
+17. Check to see is a movie is in our watchlist 
+-Inside of MovieCard.jsx, destructure removeMovie
+
+-We need to check if the current movie is in our watchlist. Let’s create a variable called inWatchlist
+
+-This is going to be equal to list filtered. We want to check if the current movie id is inside of list.
+
+code:
+const inWatchlist = list.filter((mov) => {
+    return mov.id === movie.id;
+});
+-----------------------------------------------------------
+18. Conditionally render a new button 
+-We are going to create a variable called button
+
+-This variable is equal to a ternery. The condition is checking to see if the length of inWatchlist equals zero.
+
+-If true, render our Add Movie Button that we previously had
+
+-If false, render a new button showing “Remove” which has the onClick event to trigger removeMovie, passing in movie as an argument
+
+-Replace our previous “Add Movie” button with this new button variable
+
+code: 
+const button =
+inWatchlist.length === 0 ? (
+    <button onClick={() => addMovie(movie)}>Add to List</button>
+) : (
+    <button onClick={() => removeMovie(movie)}>Remove</button>
+);
+
+return (
+    <div className="movie-card">
+        <div>
+            <img src={`https://image.tmdb.org/t/p/original${movie.poster_path}`} />
+            <h3>{movie.original_title}</h3>
+        </div>
+        {button}
+    </div>
+);
+-----------------------------------------------------------
+19. Create page naviagation buttons 
+-Inside of MovieScreen, create a <div> in between the <h3> and the movie-container div.
+
+-This div will have the classname of “btn-container”
+
+-Create two buttons inside, one for “Previous” and one for “Next”
+
+code:
+return (
+    <div className="page">
+        <h1>Devmountain Movie Theatre</h1>
+        <h3>Add a movie to your watchlist!</h3>
+        <div className="btn-container">
+            <button>Previous</button>
+            <button>Next</button>
+        </div>
+        <div className="movie-container">{movieDisplay}</div>
+    </div>
+);
+-----------------------------------------------------------
+20. create two functions
+-Inside of MovieScreen, create two functions, one called decrement, and one called increment
+
+-These functions will setPage to page +- 1, depending on which function they belong to
+
+-Attach these functions to their corresponding buttons through onClick events.
+
+-For the previous button, add a logical AND operator to check if page isn’t equal to 1
+
+code: 
+<button onClick={page !== 1 && decrement}>Previous</button>
+<button onClick={increment}>Next</button>
